@@ -5,12 +5,16 @@ import math
 import time
 import lorem
 import random
+from prometheus_flask_exporter import PrometheusMetrics
 
 app = flask.Flask(__name__)
-app.config["DEBUG"] = True
+#app.config["DEBUG"] = True
+metrics = PrometheusMetrics(app)
+
+metrics.info('app_info', 'Application info', version='0.0.0')
 
 
-@app.route('/', methods=['GET'])
+@app.route('/')
 def home():
     return "<h1>Welcome to a simple flask app to fulfill server requests needed for Insight's " \
            "DevOps Challenge Problem</h1>"
@@ -88,4 +92,7 @@ def disk_intensive():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=80)
+    try:
+        app.run(host="0.0.0.0", port=80)
+    except PermissionError:
+        app.run()
